@@ -13,7 +13,8 @@ public class Main extends Applet implements Runnable
 {
 	private static final long serialVersionUID = 8864158495101925325L;		//because stupid warnings
 	
-	public static int changeDelaySeconds = 4, gridSize = 10;
+	public static int changeDelaySeconds = 2;
+	public static int gridSize = 10;
 	
 	public static int pixelSize = 1;	//change the scale the pixels are multiplied by when drawn to
 	
@@ -23,7 +24,7 @@ public class Main extends Applet implements Runnable
 	
 	public static String windowName = "BattleShip";
 
-	public static boolean debugMode = true;
+	public static boolean debugMode = false;
 	
 	public static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	public static int screenWidth = (int)screenSize.getWidth();
@@ -51,7 +52,8 @@ public class Main extends Applet implements Runnable
 	
 	public Main()
 	{
-		setPreferredSize(size);
+		Dimension fixedSize = new Dimension(size.width-10,size.height-10);
+		setPreferredSize(fixedSize);
 		requestFocus();
 	}
 
