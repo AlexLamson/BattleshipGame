@@ -261,13 +261,8 @@ public class BattleShipAI
 	//place ships randomly
 	public static ArrayList<Ship> getShips(int[][] friendlySea)
 	{
-		boolean manSave = Main.manualAdding;
-		Main.manualAdding = false;
-		
 		Sea testSea = new Sea(friendlySea.length, friendlySea[0].length);
-		
-		Main.manualAdding = manSave;
-		
+		testSea.reset();
 		return testSea.fleet;
 	}
 	

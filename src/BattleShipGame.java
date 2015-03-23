@@ -217,6 +217,8 @@ public class BattleShipGame
 				
 				if(theirSea.isValidFleet(proposedAIFleet))
 				{
+					theirSea.clearShips();
+
 					for(Ship ship : proposedAIFleet)
 						theirSea.fleet.add(ship);
 					theirSea.updateNums();
