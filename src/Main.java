@@ -24,7 +24,7 @@ public class Main extends Applet implements Runnable
 	
 	public static String windowName = "BattleShip";
 
-	public static boolean debugMode = false;
+	public static boolean debugMode = true;
 	
 	public static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	public static int screenWidth = (int)screenSize.getWidth();

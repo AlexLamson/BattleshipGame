@@ -18,7 +18,7 @@ public class BattleShipAI
 	public static ArrayList<ArrayList<Ship>> allCombos = new ArrayList<ArrayList<Ship>>();
 	
 	public static boolean debug = true;
-	public static boolean printScores = false;
+	public static boolean printScores = true;
 	
 	/*
 	Bugs:
@@ -422,8 +422,8 @@ public class BattleShipAI
 		score = regionScore + adjacentScore + 0*distScore + rowColScore;
 		
 		//DEBUG trying to use parity method
-		if(xPos % 2 == 0 && yPos % 2 == 0)
-			score /= 2;
+		if(xPos % 2 == yPos % 2)
+			score *= 0.5;
 		
 		return score;
 	}
