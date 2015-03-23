@@ -278,7 +278,7 @@ public class Sea
 		}
 		
 		Ship possibleDestroyedShip = getShip(x,y);
-		if(Main.debugMode)
+		if(possibleDestroyedShip.getSize() != 1 && Main.debugMode)
 		{
 			boolean val = shipDestroyed(possibleDestroyedShip);
 			if(val)

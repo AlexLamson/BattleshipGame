@@ -6,10 +6,7 @@ public class Ship
 	public static Ship placeholderShip = new Ship();
 	
 	//placeholder ship
-	public Ship()
-	{
-		
-	}
+	public Ship() { }
 	
 	//copy constructor
 	public Ship(Ship ship)

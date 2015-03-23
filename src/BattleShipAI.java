@@ -25,17 +25,19 @@ public class BattleShipAI
 	
 	To do:
 	
+	-its possible for the ai to place ships in overlapping positions
+	
 	-maybe add a 0 player mode where the AI fights itself?
 		in order to do this, the AI need to be an object, not totally static
 	-if the AI hits a ship, fires in 2 directions, hits, but doesn't sink, shift the lastNewShip up, and if that doesn't work, down
 	-(how?) games end faster when the human's ships are in the middle of the sea - compensate for this to make it faster when they are more spread out
 	-improve scoring: find every possible combination of the remaining ships, and add 1 to the score of each tile that intersects a theoretical ship
 		to do this, have a recursive method that takes a ship size, and (PROBLEM: MULTIPLE SHIPS OF SAME SIZE)
-	-organzie the methods in the AI class (make it a little easier to find things without searching)
+	-organize the methods in the AI class (make it a little easier to find things without searching)
 	
 	*/
 	
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~methods that give info to the ai~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~methods that give info to the AI~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	
 	//this method is called if the ai sunk a ship
 	public static void sunkShip(Ship ship)
@@ -47,7 +49,7 @@ public class BattleShipAI
 		sunkShips.add(ship);
 	}
 	
-	//this method is called if the ai bombed a ship
+	//this method is called if the AI bombed a ship
 	public static void hit(int x, int y)
 	{
 		System.out.println("AI - hit!");
@@ -60,7 +62,7 @@ public class BattleShipAI
 		hitLocs.add(new Point(x , y));
 	}
 	
-	//this method is called if the ai bombed the ocean
+	//this method is called if the AI bombed the ocean
 	public static void miss(int x, int y)
 	{
 		System.out.println("AI - miss!");
@@ -223,7 +225,7 @@ public class BattleShipAI
 						bestTile = scoredSea[x][y];
 			
 			
-			//create arraylist of points for each tile with highest score
+			//create ArrayList of points for each tile with highest score
 			ArrayList<Point> bestTiles = new ArrayList<Point>();
 			for(int y = 0; y < scoredSea[0].length; y++)
 			{
@@ -320,26 +322,108 @@ public class BattleShipAI
 		if(isBombed(xPos, yPos, sea))
 			return 0;
 		
+		if(isMiss(xPos-1, yPos, sea) && isMiss(xPos+1, yPos, sea) && isMiss(xPos, yPos-1, sea) && isMiss(xPos, yPos+1, sea))
+			return 0;
+		
 		int score = 0;
+		
+		int regionScore = 0;
 		for(int y = yPos-range; y < sea[0].length && y <= yPos+range; y++)
 		{
 			for(int x = xPos-range; x < sea.length && x <= xPos+range; x++)
 			{
-				if(isTile(x, y, sea) && sea[x][y] == Sea.OCEAN)
+				if(isOcean(x, y, sea))
 				{
-					score++;
+					regionScore++;
 				}
 				
 				// if(isOcean(x-1, y, sea) && isOcean(x+1, y, sea) && isOcean(x, y-1, sea) && isOcean(x, y+1, sea))
 				// {
-				// 	score++;
+				// 	regionScore++;
 				// 	if(isOcean(x-2, y, sea) && isOcean(x+2, y, sea) && isOcean(x, y-2, sea) && isOcean(x, y+2, sea))
 				// 	{
-				// 		score++;
+				// 		regionScore++;
 				// 	}
 				// }
 			}
 		}
+		
+		int adjacentScore = 0;
+		for(int y = yPos-1; y < sea[0].length && y <= yPos+1; y++)
+		{
+			for(int x = xPos-1; x < sea.length && x <= xPos+1; x++)
+			{
+				if(isTile(x, y, sea) && sea[x][y] == Sea.OCEAN)
+					adjacentScore++;
+			}
+		}
+		
+		int distScore = 0;
+		for(int y = 0; y < sea[0].length; y++)
+		{
+			for(int x = 0; x < sea.length; x++)
+			{
+				if(isBombed(x, y, sea))
+				{
+					distScore += 0;
+				}
+				else if(isOcean(x, y, sea))
+				{
+//					int manhattanDist = Math.abs(xPos-x) + Math.abs(yPos-y);
+//					distScore += (sea.length*sea[0].length) - manhattanDist;
+					
+					int dist = (int)Math.sqrt((xPos-x)*(xPos-x) + (yPos-y)*(yPos-y));
+					distScore += (int)Math.sqrt(sea.length*sea.length + sea[0].length*sea[0].length) - dist;
+				}
+			}
+		}
+		distScore /= sea.length*sea[0].length;
+		
+		int rowColScore = 0;
+		int colScore = 0;
+		int rowScore = 0;
+		for(int y = yPos; y >= 0; y--)
+		{
+			if(isBombed(xPos, y, sea))
+				break;
+			colScore++;
+		}
+		for(int y = yPos; y < sea[0].length; y++)
+		{
+			if(isBombed(xPos, y, sea))
+				break;
+			colScore++;
+		}
+		for(int x = xPos; x >= 0; x--)
+		{
+			if(isBombed(x, yPos, sea))
+				break;
+			rowScore++;
+		}
+		for(int x = xPos; x < sea.length; x++)
+		{
+			if(isBombed(x, yPos, sea))
+				break;
+			rowScore++;
+		}
+		rowColScore = colScore + rowScore;
+		
+		int smallestRemainingShip = getSmallestShipNotDestroyed();
+		if(rowScore < smallestRemainingShip)
+			rowScore = 0;
+		if(colScore < smallestRemainingShip)
+			colScore = 0;
+		
+//		System.out.println("regionScore: "+regionScore);
+//		System.out.println("adjacentScore: "+adjacentScore);
+//		System.out.println("distScore: "+distScore);
+//		System.out.println("rowColScore: "+rowColScore);
+		
+		score = regionScore + adjacentScore + 0*distScore + rowColScore;
+		
+		//DEBUG trying to use parity method
+		if(xPos % 2 == 0 && yPos % 2 == 0)
+			score /= 2;
 		
 		return score;
 	}
@@ -379,7 +463,6 @@ public class BattleShipAI
 	{
 		ArrayList<Integer> shipSizesLeft = new ArrayList<Integer>();
 		
-		int initialSize = 0;
 		for(int size : BattleShipGame.shipSizes)
 			shipSizesLeft.add(new Integer(size));
 		
@@ -392,6 +475,24 @@ public class BattleShipAI
 				smallest = in.intValue();
 		
 		return smallest;
+	}
+	
+	public static int getLongestShipNotDestroyed()
+	{
+		ArrayList<Integer> shipSizesLeft = new ArrayList<Integer>();
+		
+		for(int size : BattleShipGame.shipSizes)
+			shipSizesLeft.add(new Integer(size));
+		
+		for(Ship ship : sunkShips)
+			shipSizesLeft.remove(new Integer(ship.getSize()));
+		
+		int largest = 1;
+		for(Integer in : shipSizesLeft)
+			if(in.intValue() > largest)
+				largest = in.intValue();
+		
+		return largest;
 	}
 	
 	public static Point randomOceanTile(int[][] sea)

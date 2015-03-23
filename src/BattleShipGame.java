@@ -9,6 +9,7 @@ public class BattleShipGame
 	public Sea theirSea;	//the sea on the left
 	
 	public boolean myTurn = true, myTurnEditing = true;
+	public int totalTurns = 0;
 	
 	public static int[] shipSizes = new int[]{2, 3, 3, 4, 5};
 	
@@ -218,7 +219,7 @@ public class BattleShipGame
 				if(theirSea.isValidFleet(proposedAIFleet))
 				{
 					theirSea.clearShips();
-
+					
 					for(Ship ship : proposedAIFleet)
 						theirSea.fleet.add(ship);
 					theirSea.updateNums();
@@ -228,6 +229,10 @@ public class BattleShipGame
 					theirSea.renderEditingShip = false;
 					Main.editingMode = false;
 					Main.placingShips = false; 
+				}
+				else
+				{
+					System.err.println("BUG IN AI - ILLEGAL SHIP PLACEMENT");
 				}
 			}
 		}

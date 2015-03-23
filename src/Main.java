@@ -23,7 +23,7 @@ public class Main extends Applet implements Runnable
 	
 	public static String windowName = "BattleShip";
 
-	public static boolean debugMode = false;
+	public static boolean debugMode = true;
 	
 	public static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	public static int screenWidth = (int)screenSize.getWidth();
@@ -141,18 +141,19 @@ public class Main extends Applet implements Runnable
 			gameOver = true;
 			game.makeRightWin(game.isMyWin());
 			
-			if(!debugMode)
-			{
+//			if(!debugMode)
+//			{
 				render();
-				String winner = "left side wins!";
+				String winner = "left side wins";
 				if(game.isMyWin())
-					winner = "right side wins!";
+					winner = "right side wins";
 				if(!isTwoPlayers && !game.isMyWin())
-					winner = "the computer wins!";
+					winner = "the computer wins";
 				else
-					winner = "you win!";
-				JOptionPane.showMessageDialog(null, "Game over - "+winner);
-			}
+					winner = "you win";
+				String turns = " in "+game.totalTurns+" turns";
+				JOptionPane.showMessageDialog(null, "Game over - "+winner+turns+"!");
+//			}
 		}
 	}
 	
@@ -169,6 +170,7 @@ public class Main extends Applet implements Runnable
 	
 	public static void endTurn()
 	{
+		game.totalTurns++;
 		if(isTwoPlayers)
 		{
 			swap();
